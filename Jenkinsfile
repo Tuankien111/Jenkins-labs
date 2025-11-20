@@ -23,6 +23,7 @@ pipeline {
                     sh 'cp .env.example .env'
                     sh "sed -i 's/DB_DATABASE=laravel/DB_DATABASE=laravel_db/g' .env"
                     sh "sed -i 's/DB_HOST=127.0.0.1/DB_HOST=db/g' .env"
+                    sh 'docker compose down || true'
 
                     // Dựng container lên (-d: chạy ngầm)
                     sh 'docker compose up -d --build'
