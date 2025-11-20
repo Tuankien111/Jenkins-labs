@@ -16,7 +16,7 @@
 <body class="bg-gray-100 font-sans h-screen flex flex-col">
 
     <header class="bg-rose-600 text-white p-4 shadow-md flex justify-between items-center">
-        <h1 class="text-xl font-bold">🛒 Mini App Testing Interface</h1>
+        <h1 class="text-xl font-bold">🛒 Mini App Của Tuấn Kiện</h1>
         <button onclick="loadOrders()" class="bg-rose-700 hover:bg-rose-800 px-4 py-2 rounded text-sm">
             Refresh Orders
         </button>
