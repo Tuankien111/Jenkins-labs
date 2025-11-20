@@ -50,16 +50,16 @@ pipeline {
             }
         }
 
-        // // Giai đoạn 4: Chạy Test (Trùm cuối)
-        // stage('Run Unit Tests') {
-        //     steps {
-        //         script {
-        //             echo '--- 🧪 Đang chạy Test... ---'
-        //             // Chạy test với cấu hình SQLite in-memory để tốc độ cao nhất
-        //             sh 'docker compose exec -T app sh -c "DB_CONNECTION=sqlite DB_DATABASE=:memory: php artisan test"'
-        //         }
-        //     }
-        // }
+        // Giai đoạn 4: Chạy Test (Trùm cuối)
+        stage('Run Unit Tests') {
+            steps {
+                script {
+                    echo '--- 🧪 Đang chạy Test... ---'
+                    // Chạy test với cấu hình SQLite in-memory để tốc độ cao nhất
+                    sh 'docker compose exec -T app sh -c "DB_CONNECTION=sqlite DB_DATABASE=:memory: php artisan test"'
+                }
+            }
+        }
     }
 
     // Dọn dẹp sau khi chạy xong
