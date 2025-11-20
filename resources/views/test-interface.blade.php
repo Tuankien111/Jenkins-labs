@@ -15,9 +15,9 @@
 </head>
 <body class="bg-gray-100 font-sans h-screen flex flex-col">
 
-    <header class="bg-blue-600 text-white p-4 shadow-md flex justify-between items-center">
+    <header class="bg-rose-600 text-white p-4 shadow-md flex justify-between items-center">
         <h1 class="text-xl font-bold">🛒 Mini App Testing Interface</h1>
-        <button onclick="loadOrders()" class="bg-blue-700 hover:bg-blue-800 px-4 py-2 rounded text-sm">
+        <button onclick="loadOrders()" class="bg-rose-700 hover:bg-rose-800 px-4 py-2 rounded text-sm">
             Refresh Orders
         </button>
     </header>
@@ -30,7 +30,7 @@
                 <p class="text-gray-500 col-span-3 text-center">Loading products...</p>
             </div>
             <div class="mt-4 text-center">
-                <button id="load-more-btn" class="hidden text-blue-600 hover:underline">Load More</button>
+                <button id="load-more-btn" class="hidden text-rose-600 hover:underline">Load More</button>
             </div>
         </div>
 
@@ -195,10 +195,10 @@
                 card.innerHTML = `
                     <div class="flex justify-between items-start mb-2">
                         <h3 class="font-bold text-sm text-gray-800 h-10 overflow-hidden line-clamp-2">${p.name}</h3>
-                        <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2 py-1 rounded">$${p.price}</span>
+                        <span class="bg-rose-100 text-rose-800 text-xs font-bold px-2 py-1 rounded">$${p.price}</span>
                     </div>
                     <p class="text-xs text-gray-500 mb-2 line-clamp-2">${p.description || 'No description'}</p>
-                    <button class="w-full mt-2 bg-gray-100 hover:bg-blue-50 text-blue-600 text-xs font-bold py-1 rounded border border-blue-200">
+                    <button class="w-full mt-2 bg-gray-100 hover:bg-rose-50 text-rose-600 text-xs font-bold py-1 rounded border border-rose-200">
                         + Add to Cart
                     </button>
                 `;
