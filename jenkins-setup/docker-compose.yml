@@ -1,0 +1,16 @@
+
+services:
+  jenkins:
+    build: .
+    container_name: my_jenkins_server
+    restart: unless-stopped
+    user: root 
+    ports:
+      - "8080:8080"   # Cổng Web UI
+      - "50000:50000" # Cổng Agent
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock 
+
+volumes:
+  jenkins_home:
