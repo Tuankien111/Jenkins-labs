@@ -39,8 +39,8 @@ pipeline {
                     sh 'docker compose exec -T app composer install --no-interaction --prefer-dist'
                     
                     echo '--- 🔑 Đang tạo Key & Migrate... ---'
-                    sh 'docker compose exec -T app php artisan key:generate'
-                    sh 'docker compose exec -T app php artisan config:clear'
+                    sh 'docker compose exec -T app php artisan key:generate' //
+                    sh 'docker compose exec -T app php artisan config:clear' //
                     sh 'docker compose exec -T app php artisan migrate:refresh --seed --force'
                     sh 'docker compose exec -T app php artisan storage:link'
 
