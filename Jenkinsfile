@@ -57,17 +57,7 @@ pipeline {
                 }
             }
         }
-    }
-
-    // Dọn dẹp sau khi chạy xong
-    post {
-        always {
-            script {
-                echo '--- 🧹 Dọn dẹp container... ---'
-                // sh 'docker compose down'
-            }
-        }
-    }
+    
 
     // --- GIAI ĐOẠN MỚI: ĐÓNG GÓI & ĐẨY LÊN KHO ---
         stage('Build & Push Docker Image') {
@@ -96,12 +86,12 @@ pipeline {
             }
         }
     
-
+    }
     post {
         always {
             script {
                 echo '--- 🧹 Dọn dẹp môi trường Test... ---'
-                sh 'docker compose down'
+                // sh 'docker compose down'
             }
         }
         
