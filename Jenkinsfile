@@ -15,27 +15,23 @@ pipeline {
             }
         }
 
-        // // Giai đoạn 2: Khởi động môi trường
-        // stage('Start Docker Environment') {
-        //     steps {
-        //         script {
-        //             echo '--- 🚀 Đang dựng hệ thống Docker... ---'
-        //             // Tạo file .env từ file mẫu (Quan trọng!)
-        //             sh 'cp .env.example .env'
-                    
-        //             // Sửa cấu hình DB trong .env thành 'laravel_db' cho khớp docker-compose
-        //             // (Dùng sed để thay thế dòng text)
-        //             sh "sed -i 's/DB_DATABASE=laravel/DB_DATABASE=laravel_db/g' .env"
-        //             sh "sed -i 's/DB_HOST=127.0.0.1/DB_HOST=db/g' .env"
+        // Giai đoạn 2: Khởi động môi trường
+        stage('Start Docker Environment') {
+            steps {
+                script {
+                    echo '--- 🚀 Đang dựng hệ thống Docker... ---'
+                    sh 'cp .env.example .env'
+                    sh "sed -i 's/DB_DATABASE=laravel/DB_DATABASE=laravel_db/g' .env"
+                    sh "sed -i 's/DB_HOST=127.0.0.1/DB_HOST=db/g' .env"
 
-        //             // Dựng container lên (-d: chạy ngầm)
-        //             sh 'docker compose up -d --build'
+                    // Dựng container lên (-d: chạy ngầm)
+                    sh 'docker compose up -d --build'
                     
-        //             // Đợi 15s cho MySQL kịp khởi động (Hack trick cho MySQL)
-        //             sh 'sleep 15'
-        //         }
-        //     }
-        // }
+                    // Đợi 15s cho MySQL kịp khởi động (Hack trick cho MySQL)
+                    sh 'sleep 15'
+                }
+            }
+        }
 
         // // Giai đoạn 3: Cài đặt Dependencies
         // stage('Install Dependencies') {
