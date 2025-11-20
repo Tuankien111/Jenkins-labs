@@ -34,20 +34,20 @@ pipeline {
             }
         }
 
-        // // Giai đoạn 3: Cài đặt Dependencies
-        // stage('Install Dependencies') {
-        //     steps {
-        //         script {
-        //             echo '--- 📦 Đang cài Composer... ---'
-        //             // -T: Tắt chế độ TTY (Bắt buộc khi chạy trong Jenkins)
-        //             sh 'docker compose exec -T app composer install --no-interaction --prefer-dist'
+        // Giai đoạn 3: Cài đặt Dependencies
+        stage('Install Dependencies') {
+            steps {
+                script {
+                    echo '--- 📦 Đang cài Composer... ---'
+                    // -T: Tắt chế độ TTY (Bắt buộc khi chạy trong Jenkins)
+                    sh 'docker compose exec -T app composer install --no-interaction --prefer-dist'
                     
-        //             echo '--- 🔑 Đang tạo Key & Migrate... ---'
-        //             sh 'docker compose exec -T app php artisan key:generate'
-        //             sh 'docker compose exec -T app php artisan migrate:fresh --seed --force'
-        //         }
-        //     }
-        // }
+                    echo '--- 🔑 Đang tạo Key & Migrate... ---'
+                    sh 'docker compose exec -T app php artisan key:generate'
+                    sh 'docker compose exec -T app php artisan migrate:fresh --seed --force'
+                }
+            }
+        }
 
         // // Giai đoạn 4: Chạy Test (Trùm cuối)
         // stage('Run Unit Tests') {
