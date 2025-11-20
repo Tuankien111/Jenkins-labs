@@ -26,7 +26,7 @@ pipeline {
                     sh "sed -i 's/DB_HOST=127.0.0.1/DB_HOST=db/g' .env"
                     sh 'docker compose down || true'
                     sh 'docker compose up -d --build'
-                    sh 'sleep 15'
+                    sh 'sleep 15dsa'
                 }
             }
         }
