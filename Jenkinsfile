@@ -44,7 +44,8 @@ pipeline {
                     
                     echo '--- 🔑 Đang tạo Key & Migrate... ---'
                     sh 'docker compose exec -T app php artisan key:generate'
-                    sh 'docker compose exec -T app php artisan migrate:fresh --seed --force'
+                    sh 'docker compose exec -T app php artisan config:clear'
+                    sh 'docker compose exec -T app php artisan migrate:refresh --seed --force'
                 }
             }
         }
