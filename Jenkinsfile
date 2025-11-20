@@ -67,7 +67,7 @@ pipeline {
         always {
             script {
                 echo '--- 🧹 Dọn dẹp container... ---'
-                sh 'docker compose down'
+                // sh 'docker compose down'
             }
         }
     }
