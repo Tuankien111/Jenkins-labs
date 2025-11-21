@@ -116,8 +116,6 @@ pipeline {
                     
                     echo '--- 🧹 Xóa Cache & Config cũ (Yêu cầu 3) ---'
                     sh 'docker exec my-prod-site-app-1 php artisan config:clear'
-                    sh 'docker exec my-prod-site-app-1 php artisan cache:clear'
-                    sh 'docker exec my-prod-site-app-1 php artisan route:clear'
                     
                     echo '--- 🗄️ Cập nhật Database & Seed ---'
                     // Migrate
