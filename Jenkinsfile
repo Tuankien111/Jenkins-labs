@@ -6,6 +6,12 @@ pipeline {
         DOCKER_HUB_USER = "kenejidev" 
         IMAGE_NAME = "jenkins-test-build"
         IMAGE_TAG = "${BUILD_NUMBER}"
+        DB_CONNECTION = "mysql"
+        DB_PORT = "3306"
+        DB_HOST = "db" 
+        DB_DATABASE = "laravel_db"
+        DB_USERNAME = "laravel"
+        DB_PASSWORD = credentials('prod-db-password')
     }
 
     stages {
@@ -22,11 +28,7 @@ pipeline {
                 script {
                     echo '--- 🚀 Đang dựng hệ thống Docker... ---'
                     sh 'cp .env.example .env'
-                    sh "sed -i 's/DB_DATABASE=laravel/DB_DATABASE=laravel_db/g' .env"
-                    sh "sed -i 's/DB_HOST=127.0.0.1/DB_HOST=db/g' .env"
-                    sh 'docker compose down || true'
-                    sh 'docker compose up -d --build'
-                    sh 'sleep 15'
+                    sh 'docker compose up -d --build --wait' 
                 }
             }
         }
@@ -70,13 +72,8 @@ pipeline {
                         
                         // 1. Đăng nhập Docker Hub
                         sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
-                        
-                        // 2. Build Image Production (Đặt tag là version hiện tại và latest)
-                        // Lưu ý: Ta build từ file Dockerfile hiện tại
                         sh "docker build -t ${DOCKER_HUB_USER}/${IMAGE_NAME}:${IMAGE_TAG} ."
-                        sh "docker build -t ${DOCKER_HUB_USER}/${IMAGE_NAME}:latest ."
-                        
-                        // 3. Đẩy lên Docker Hub
+                        sh "docker tag ${DOCKER_HUB_USER}/${IMAGE_NAME}:${IMAGE_TAG} ${DOCKER_HUB_USER}/${IMAGE_NAME}:latest"
                         sh "docker push ${DOCKER_HUB_USER}/${IMAGE_NAME}:${IMAGE_TAG}"
                         sh "docker push ${DOCKER_HUB_USER}/${IMAGE_NAME}:latest"
                         
