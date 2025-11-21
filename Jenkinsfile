@@ -27,7 +27,7 @@ pipeline {
             steps {
                 script {
                     echo '--- 🚀 Đang dựng hệ thống Docker... ---'
-                    sh 'cp .env.example .env'
+                    sh 'touch .env'
                     sh 'docker compose up -d --build --wait' 
                 }
             }

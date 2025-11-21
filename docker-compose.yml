@@ -4,7 +4,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: laravel-app
     restart: unless-stopped
     working_dir: /var/www
     environment:
@@ -27,7 +26,6 @@ services:
     build:
       context: .               
       dockerfile: docker/nginx/Dockerfile 
-    container_name: laravel-web
     restart: unless-stopped
     ports:
       - "8000:80"
@@ -39,13 +37,12 @@ services:
   # 3. Database MySQL (Chuẩn Production hơn SQLite)
   db:
     image: mysql:8.0
-    container_name: laravel-db
     restart: unless-stopped
     environment:
-      - MYSQL_DATABASE=${DB_DATABASE:-laravel}
+      - MYSQL_DATABASE=${DB_DATABASE:-laravel_db}
+      - MYSQL_USER=${DB_USERNAME:-laravel}
       - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
       - MYSQL_PASSWORD=${DB_PASSWORD}
-      - MYSQL_USER=${DB_USERNAME:-laravel}
     volumes:
       - dbdata:/var/lib/mysql
     networks:
