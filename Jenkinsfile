@@ -37,7 +37,7 @@ pipeline {
                         echo "DB_USERNAME=${DB_USERNAME}" >> .env
                         echo "DB_PASSWORD=${DB_PASSWORD}" >> .env
                         echo "MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}" >> .env
-                        echo "APP_KEY=${APP_KEY}" >> .env
+                        echo "APP_KEY=" >> .env
                     """
                     sh 'docker compose up -d --build --wait' 
                 }
@@ -53,8 +53,9 @@ pipeline {
                     sh 'docker compose exec -T app composer install --no-interaction --prefer-dist --optimize-autoloader'
                     
                     echo '--- 🔑 Đang tạo Key & Migrate... ---'
-                    // Tạo App Key
-                    sh 'docker compose exec -T app php artisan optimize:clear'
+                    // Tạo App Key 
+                    sh 'docker compose exec -T app php artisan key:generate'
+                    sh 'docker compose exec -T app php artisan config:clear'
                     sh 'docker compose exec -T app php artisan migrate:refresh --force'
                     sh 'docker compose exec -T app php artisan db:seed --force || echo "⚠️ Seeding failed or skipped"'
                     sh 'docker compose exec -T app php artisan storage:link'
@@ -91,6 +92,35 @@ pipeline {
                         
                         echo "✅ Đã đẩy ảnh lên: https://hub.docker.com/r/${DOCKER_HUB_USER}/${IMAGE_NAME}"
                     }
+                }
+            }
+        }
+
+        stage('Deploy to Local Prod') {
+            steps {
+                script {
+                    echo '--- 🚀 Đang Deploy ra "Môi trường thật" (Port 8081)... ---'         
+                    withEnv(["APP_KEY=${PROD_APP_KEY}"]) {
+                        sh 'docker compose -f production/docker-compose.prod.yml -p my-prod-site down --remove-orphans'
+                        sh 'docker compose -f production/docker-compose.prod.yml -p my-prod-site pull'
+                        sh 'docker compose -f production/docker-compose.prod.yml -p my-prod-site up -d'
+                    }
+                    
+                    echo '--- 🧹 Xóa Cache & Config cũ (Yêu cầu 3) ---'
+                    sh 'docker exec my-prod-site-app-1 php artisan config:clear'
+                    sh 'docker exec my-prod-site-app-1 php artisan cache:clear'
+                    sh 'docker exec my-prod-site-app-1 php artisan route:clear'
+                    
+                    echo '--- 🗄️ Cập nhật Database & Seed ---'
+                    // Migrate
+                    sh 'docker exec my-prod-site-app-1 php artisan migrate --force'
+                    // Seed (Tạm thời - Lưu ý: Seed nhiều lần có thể gây trùng dữ liệu nếu seeder không chuẩn)
+                    sh 'docker exec my-prod-site-app-1 php artisan db:seed --force'
+                    
+                    echo '--- 🔗 Link Storage ---'
+                    sh 'docker exec my-prod-site-app-1 php artisan storage:link'
+                    
+                    echo '--- ✅ Deploy Production Giả Lập Hoàn Tất! ---'
                 }
             }
         }

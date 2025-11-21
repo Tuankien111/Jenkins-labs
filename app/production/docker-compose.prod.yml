@@ -1,0 +1,58 @@
+services:
+  app:
+    image: kenejidev/jenkins-test-build:latest
+    restart: always
+    environment:
+      - APP_KEY=${APP_KEY}
+      - DB_HOST=db
+      - DB_DATABASE=laravel_prod 
+      - DB_USERNAME=laravel
+      - DB_PASSWORD=password_prod
+    networks:
+      - prod-net  
+      - private-net
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    image: nginx:stable-alpine
+    restart: always
+    ports:
+      - "8081:80"  
+    volumes:
+      - ../docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - app_public:/var/www/public
+    networks:
+      - prod-net
+    depends_on:
+      - app
+
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_DATABASE: laravel_prod
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: password_prod
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - prod_dbdata:/var/lib/mysql 
+    networks:
+      - private-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-root}"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+networks:
+  prod-net:
+    driver: bridge
+  private-net:
+    driver: bridge
+
+volumes:
+  prod_dbdata:
+  app_public:

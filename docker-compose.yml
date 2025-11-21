@@ -41,7 +41,6 @@ services:
   db:
     image: mysql:8.0
     restart: unless-stopped
-    # Fix: Dùng native password để tránh lỗi connection với driver cũ của Laravel/PHP
     command: --default-authentication-plugin=mysql_native_password
     env_file:
       - .env
