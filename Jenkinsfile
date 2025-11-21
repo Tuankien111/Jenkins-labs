@@ -41,7 +41,6 @@ pipeline {
                         echo "DB_PASSWORD=${DB_PASSWORD}" >> .env
                         echo "MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}" >> .env
                     """
-                    sh 'docker compose down -v || true'
                     sh 'docker compose up -d --build --wait' 
                 }
             }
