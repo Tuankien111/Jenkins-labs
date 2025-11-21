@@ -115,7 +115,6 @@ pipeline {
                     }
                     
                     echo '--- 🧹 Xóa Cache & Config cũ (Yêu cầu 3) ---'
-                    sh 'docker compose exec -T my-prod-site-app-1 composer install --no-interaction --prefer-dist --optimize-autoloader'
                     sh 'docker exec -T my-prod-site-app-1 php artisan config:clear'
                     sh 'docker exec -T my-prod-site-app-1 php artisan cache:clear'
                     sh 'docker exec -T my-prod-site-app-1 php artisan route:clear'

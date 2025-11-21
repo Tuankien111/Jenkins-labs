@@ -16,7 +16,10 @@ WORKDIR /var/www
 RUN groupadd -g 1000 laravel
 RUN useradd -u 1000 -ms /bin/bash -g laravel laravel
 COPY . /var/www
-RUN chown -R laravel:laravel /var/www
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
+RUN chown -R laravel:laravel /var/www \
+    && chmod -R 775 /var/www/storage \
+    && chmod -R 775 /var/www/bootstrap/cach
 USER laravel
 
 EXPOSE 9000
