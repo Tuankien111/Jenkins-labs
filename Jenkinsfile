@@ -32,14 +32,14 @@ pipeline {
                 script {
                     echo '--- 🚀 Đang dựng hệ thống Docker... ---'
                     sh '''
-                        echo "DB_CONNECTION='${DB_CONNECTION}'" > .env
-                        echo "DB_PORT='${DB_PORT}'" >> .env
-                        echo "DB_HOST='${DB_HOST}'" >> .env
-                        echo "DB_DATABASE='${DB_DATABASE}'" >> .env
-                        echo "DB_USERNAME='${DB_USERNAME}'" >> .env
-                        echo "DB_PASSWORD='${DB_PASSWORD}'" >> .env
-                        echo "MYSQL_ROOT_PASSWORD='${DB_ROOT_PASSWORD}'" >> .env
-                        echo "APP_KEY='${APP_KEY_TEST}'" >> .env
+                        "DB_CONNECTION='${DB_CONNECTION}'" > .env
+                        "DB_PORT='${DB_PORT}'" >> .env
+                        "DB_HOST='${DB_HOST}'" >> .env
+                        "DB_DATABASE='${DB_DATABASE}'" >> .env
+                        "DB_USERNAME='${DB_USERNAME}'" >> .env
+                        "DB_PASSWORD='${DB_PASSWORD}'" >> .env
+                        "MYSQL_ROOT_PASSWORD='${DB_ROOT_PASSWORD}'" >> .env
+                        "APP_KEY='${APP_KEY_TEST}'" >> .env
                     '''
                     sh 'docker compose up -d --build --wait' 
                 }
