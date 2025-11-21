@@ -16,7 +16,7 @@ services:
         condition: service_healthy
 
   web:
-    image: kenejidev/internapp-web:latest
+    image: kenejidev/jenkins-test-build:latest
     restart: always
     ports:
       - "8081:80"
