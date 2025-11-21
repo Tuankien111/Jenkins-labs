@@ -9,21 +9,26 @@ class CategoryFactory extends Factory
 {
     public function definition(): array
     {
+        // Sử dụng danh sách cố định để dữ liệu đẹp và thực tế hơn
         $categories = [
-            'Electronics', 'Computers', 'Smartphones',
-            'Men Fashion', 'Women Fashion', 'Home & Kitchen',
+            'Electronics', 'Computers', 'Smartphones', 
+            'Men Fashion', 'Women Fashion', 'Home & Kitchen', 
+            'Beauty & Health', 'Books', 'Sports', 'Toys' , 'Computers', 'Smartphones', 
+            'Men Fashion', 'Women Fashion', 'Home & Kitchen', 
             'Beauty & Health', 'Books', 'Sports', 'Toys'
         ];
 
-        /**
-         * Không dùng unique() trên randomElement(),
-         * mà dùng unique() trên cả factory để tránh lỗi "unique exhausted".
-         */
+        // Lấy random và đảm bảo không trùng lặp (unique)
         $name = $this->faker->randomElement($categories);
+        
+        // Nếu chạy seed > 10 lần sẽ hết tên unique -> fallback về word
+        if (!$name) {
+             $name = ucfirst($this->faker->word) . ' ' . $this->faker->numberBetween(1, 100);
+        }
 
         return [
             'name' => $name,
-            'slug' => Str::slug($name) . '-' . $this->faker->unique()->numberBetween(1, 99999),
+            'slug' => Str::slug($name),
         ];
     }
 }
