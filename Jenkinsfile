@@ -5,6 +5,7 @@ pipeline {
         COMPOSE_PROJECT_NAME = "jenkins-test-build"
         DOCKER_HUB_USER = "kenejidev" 
         IMAGE_NAME = "jenkins-test-build"
+        WEB_IMAGE_NAME = "prod-web"
         IMAGE_TAG = "${BUILD_NUMBER}"
         DB_CONNECTION = "mysql"
         DB_PORT = "3306"
