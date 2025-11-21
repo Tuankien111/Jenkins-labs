@@ -13,13 +13,11 @@ class CategoryFactory extends Factory
         $categories = [
             'Electronics', 'Computers', 'Smartphones', 
             'Men Fashion', 'Women Fashion', 'Home & Kitchen', 
-            'Beauty & Health', 'Books', 'Sports', 'Toys' , 'Computers', 'Smartphones', 
-            'Men Fashion', 'Women Fashion', 'Home & Kitchen', 
             'Beauty & Health', 'Books', 'Sports', 'Toys'
         ];
 
         // Lấy random và đảm bảo không trùng lặp (unique)
-        $name = $this->faker->randomElement($categories);
+        $name = $this->faker->unique()->randomElement($categories);
         
         // Nếu chạy seed > 10 lần sẽ hết tên unique -> fallback về word
         if (!$name) {
