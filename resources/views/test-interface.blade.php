@@ -16,7 +16,7 @@
 <body class="bg-gray-100 font-sans h-screen flex flex-col">
 
     <header class="bg-indigo-600 text-white p-4 shadow-md flex justify-between items-center">
-        <h1 class="text-xl font-bold">🛒 Mini App Production (Mock Data) Tuấn Kiện</h1>
+        <h1 class="text-xl font-bold">🛒 Mini App Production (Mock Data)</h1>
         <button onclick="loadOrders()" class="bg-indigo-700 hover:bg-indigo-800 px-4 py-2 rounded text-sm">
             Refresh Orders
         </button>
