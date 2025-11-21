@@ -19,7 +19,7 @@ COPY . /var/www
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
 RUN chown -R laravel:laravel /var/www \
     && chmod -R 775 /var/www/storage \
-    && chmod -R 775 /var/www/bootstrap/cach
+    && chmod -R 775 /var/www/bootstrap/cache
 USER laravel
 
 EXPOSE 9000
