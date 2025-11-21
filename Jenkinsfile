@@ -101,7 +101,7 @@ pipeline {
             steps {
                 script {
                     echo '--- 🚀 Đang Deploy ra "Môi trường thật" (Port 8081)... ---'         
-                    withEnv(["APP_KEY=${PROD_APP_KEY}"]) {
+                    withEnv(["APP_KEY=${APP_KEY_PROD}"]) {
                         sh 'docker compose -f production/docker-compose.prod.yml -p my-prod-site down --remove-orphans'
                         sh 'docker compose -f production/docker-compose.prod.yml -p my-prod-site pull'
                         sh 'docker compose -f production/docker-compose.prod.yml -p my-prod-site up -d'
