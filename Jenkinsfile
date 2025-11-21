@@ -115,18 +115,19 @@ pipeline {
                     }
                     
                     echo '--- 🧹 Xóa Cache & Config cũ (Yêu cầu 3) ---'
-                    sh 'docker exec my-prod-site-app-1 php artisan config:clear'
-                    sh 'docker exec my-prod-site-app-1 php artisan cache:clear'
-                    sh 'docker exec my-prod-site-app-1 php artisan route:clear'
+                    sh 'docker compose exec -T my-prod-site-app-1 composer install --no-interaction --prefer-dist --optimize-autoloader'
+                    sh 'docker exec -T my-prod-site-app-1 php artisan config:clear'
+                    sh 'docker exec -T my-prod-site-app-1 php artisan cache:clear'
+                    sh 'docker exec -T my-prod-site-app-1 php artisan route:clear'
                     
                     echo '--- 🗄️ Cập nhật Database & Seed ---'
                     // Migrate
-                    sh 'docker exec my-prod-site-app-1 php artisan migrate --force'
+                    sh 'docker exec -T my-prod-site-app-1 php artisan migrate --force'
                     // Seed (Tạm thời - Lưu ý: Seed nhiều lần có thể gây trùng dữ liệu nếu seeder không chuẩn)
-                    sh 'docker exec my-prod-site-app-1 php artisan db:seed --force'
+                    sh 'docker exec -T my-prod-site-app-1 php artisan db:seed --force'
                     
                     echo '--- 🔗 Link Storage ---'
-                    sh 'docker exec my-prod-site-app-1 php artisan storage:link'
+                    sh 'docker exec -T my-prod-site-app-1 php artisan storage:link'
                     
                     echo '--- ✅ Deploy Production Giả Lập Hoàn Tất! ---'
                 }
