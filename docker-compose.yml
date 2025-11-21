@@ -18,8 +18,8 @@ services:
       - laravel-net
       - private-net
     depends_on:
-      - db:
-          condition: service_healthy
+      db:
+        condition: service_healthy
 
 
 # 2. Nginx Web Server

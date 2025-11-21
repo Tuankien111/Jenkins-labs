@@ -111,11 +111,11 @@ def discordSend(Map args) {
     def message = args.message
     
     withCredentials([string(credentialsId: 'discord-webhook', variable: 'DISCORD_URL')]) {
-        sh """
-            curl -H "Content-Type: application/json" \
-            -X POST \
-            -d '{"username": "Jenkins Bot", "embeds": [{"title": "${args.status}", "description": "${message}", "color": ${color}}]}' \
-            $DISCORD_URL
-        """
+    sh """
+        curl -H "Content-Type: application/json" \\
+        -X POST \\
+        -d '{"username": "Jenkins Bot", "embeds": [{"title": "${args.status}", "description": "${message}", "color": ${color}}]}' \\
+        \$DISCORD_URL
+    """
     }
 }
