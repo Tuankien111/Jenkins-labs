@@ -6,17 +6,14 @@ pipeline {
         DOCKER_HUB_USER = "kenejidev" 
         IMAGE_NAME = "jenkins-test-build"
         IMAGE_TAG = "${BUILD_NUMBER}"
-        
-        // Cấu hình Database
         DB_CONNECTION = "mysql"
         DB_PORT = "3306"
         DB_HOST = "db" 
         DB_DATABASE = "laravel_db"
         DB_USERNAME = "laravel"
-        // Biến này được lấy từ Jenkins Credentials (Secret)
         DB_PASSWORD = credentials('prod-db-password')
-        // Thêm biến Root Password cho MySQL setup (Best practice)
         DB_ROOT_PASSWORD = credentials('prod-db-password') 
+        APP_KEY = credentials('prod-app-key') 
     }
 
     stages {
@@ -40,6 +37,7 @@ pipeline {
                         echo "DB_USERNAME=${DB_USERNAME}" >> .env
                         echo "DB_PASSWORD=${DB_PASSWORD}" >> .env
                         echo "MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}" >> .env
+                        echo "APP_KEY=${APP_KEY}" >> .env
                     """
                     sh 'docker compose up -d --build --wait' 
                 }
@@ -52,14 +50,17 @@ pipeline {
                 script {
                     echo '--- 📦 Đang cài Composer... ---'
                     // Cài vendor
-                    sh 'docker compose exec -T app composer install --no-interaction --prefer-dist'
+                    sh 'docker compose exec -T app composer install --no-interaction --prefer-dist --optimize-autoloader'
                     
                     echo '--- 🔑 Đang tạo Key & Migrate... ---'
                     // Tạo App Key
-                    sh 'docker compose exec -T app php artisan key:generate'
-                    sh 'docker compose exec -T app php artisan config:clear'
-                    sh 'docker compose exec -T app php artisan migrate:refresh --seed --force'
+                    sh 'docker compose exec -T app php artisan optimize:clear'
+                    sh 'docker compose exec -T app php artisan migrate:refresh --force'
+                    sh 'docker compose exec -T app php artisan db:seed --force || echo "⚠️ Seeding failed or skipped"'
                     sh 'docker compose exec -T app php artisan storage:link'
+                    sh 'docker compose exec -T app php artisan route:cache'
+                    sh 'docker compose exec -T app php artisan view:cache'
+                    
                 }
             }
         }
