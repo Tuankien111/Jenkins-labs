@@ -90,7 +90,14 @@ pipeline {
                         sh "docker tag ${DOCKER_HUB_USER}/${IMAGE_NAME}:${IMAGE_TAG} ${DOCKER_HUB_USER}/${IMAGE_NAME}:latest"
                         sh "docker push ${DOCKER_HUB_USER}/${IMAGE_NAME}:${IMAGE_TAG}"
                         sh "docker push ${DOCKER_HUB_USER}/${IMAGE_NAME}:latest"
+                        // Build từ file docker/nginx/Dockerfile
+                        sh "docker build -f docker/nginx/Dockerfile -t ${DOCKER_HUB_USER}/${WEB_IMAGE_NAME}:${IMAGE_TAG} ."
+                        sh "docker tag ${DOCKER_HUB_USER}/${WEB_IMAGE_NAME}:${IMAGE_TAG} ${DOCKER_HUB_USER}/${WEB_IMAGE_NAME}:latest"
                         
+                        sh "docker push ${DOCKER_HUB_USER}/${WEB_IMAGE_NAME}:${IMAGE_TAG}"
+                        sh "docker push ${DOCKER_HUB_USER}/${WEB_IMAGE_NAME}:latest"
+                        
+                        echo "✅ Đã đẩy xong cả App và Web lên Docker Hub"
                         echo "✅ Đã đẩy ảnh lên: https://hub.docker.com/r/${DOCKER_HUB_USER}/${IMAGE_NAME}"
                     }
                 }

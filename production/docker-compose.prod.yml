@@ -16,12 +16,11 @@ services:
         condition: service_healthy
 
   web:
-    image: nginx:stable-alpine
+    image: kenejidev/internapp-web:latest
     restart: always
     ports:
-      - "8081:80"  
+      - "8081:80"
     volumes:
-      - ../docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
       - app_public:/var/www/public
     networks:
       - prod-net
