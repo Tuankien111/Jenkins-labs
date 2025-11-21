@@ -6,10 +6,14 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     working_dir: /var/www
+    # SRE Tip: Load thẳng file .env mà Jenkins vừa tạo
+    env_file:
+      - .env
     environment:
-      - DB_CONNECTION=${DB_CONNECTION:-mysql} 
-      - DB_PORT=${DB_PORT:-3306} 
-      - DB_HOST=${DB_HOST:-db} 
+      # App chỉ cần biết user thường, không cần biết root password
+      - DB_CONNECTION=${DB_CONNECTION:-mysql}
+      - DB_PORT=${DB_PORT:-3306}
+      - DB_HOST=db
       - DB_DATABASE=${DB_DATABASE:-laravel_db}
       - DB_USERNAME=${DB_USERNAME:-laravel}
       - DB_PASSWORD=${DB_PASSWORD}
@@ -20,12 +24,11 @@ services:
       db:
         condition: service_healthy
 
-
-# 2. Nginx Web Server
+  # 2. Nginx Web Server
   web:
     build:
-      context: .               
-      dockerfile: docker/nginx/Dockerfile 
+      context: .
+      dockerfile: docker/nginx/Dockerfile
     restart: unless-stopped
     ports:
       - "8000:80"
@@ -34,26 +37,31 @@ services:
     depends_on:
       - app
 
-  # 3. Database MySQL (Chuẩn Production hơn SQLite)
+  # 3. Database MySQL
   db:
     image: mysql:8.0
     restart: unless-stopped
+    # Fix: Dùng native password để tránh lỗi connection với driver cũ của Laravel/PHP
+    command: --default-authentication-plugin=mysql_native_password
+    env_file:
+      - .env
     environment:
-      - MYSQL_DATABASE=${DB_DATABASE:-laravel_db}
-      - MYSQL_USER=${DB_USERNAME:-laravel}
-      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
-      - MYSQL_PASSWORD=${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE:-laravel_db}
+      MYSQL_USER: ${DB_USERNAME:-laravel}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-SecretRootPass123!}
     volumes:
       - dbdata:/var/lib/mysql
     networks:
       - private-net
     ports:
-      - "3307" # Để bạn kết nối tool quản lý DB từ ngoài
+      - "3307:3306" 
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 5s
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-SecretRootPass123!}"]
+      interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 3
+      start_period: 30s 
 
 networks:
   laravel-net:
