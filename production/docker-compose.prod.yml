@@ -16,7 +16,7 @@ services:
         condition: service_healthy
 
   web:
-    image: kenejidev/jenkins-test-build:latest
+    image: kenejidev/prod-web:latest
     restart: always
     ports:
       - "8081:80"
