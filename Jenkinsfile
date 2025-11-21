@@ -37,7 +37,6 @@ pipeline {
                         echo "DB_USERNAME=${DB_USERNAME}" >> .env
                         echo "DB_PASSWORD=${DB_PASSWORD}" >> .env
                         echo "MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}" >> .env
-                        echo "APP_KEY=" >> .env
                     """
                     sh 'docker compose up -d --build --wait' 
                 }
