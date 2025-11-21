@@ -16,17 +16,19 @@ class CategoryFactory extends Factory
             'Beauty & Health', 'Books', 'Sports', 'Toys'
         ];
 
-        // Lấy random và đảm bảo không trùng lặp (unique)
-        $name = $this->faker->unique()->randomElement($categories);
-        
-        // Nếu chạy seed > 10 lần sẽ hết tên unique -> fallback về word
-        if (!$name) {
-             $name = ucfirst($this->faker->word) . ' ' . $this->faker->numberBetween(1, 100);
+        try {
+            // FIX 1: Thay $this->faker bằng fake()
+            // FIX 2: Đặt trong try-catch để xử lý khi hết tên trong mảng
+            $name = fake()->unique()->randomElement($categories);
+        } catch (\Exception $e) {
+            // Fallback: Nếu hết tên unique thì random tên mới để không bị crash
+            $name = ucfirst(fake()->word()) . ' ' . fake()->numberBetween(1, 1000);
         }
 
         return [
             'name' => $name,
-            'slug' => Str::slug($name),
+            // Thêm số ngẫu nhiên vào slug để đảm bảo slug luôn unique dù trùng tên
+            'slug' => Str::slug($name) . '-' . fake()->numberBetween(1, 9999),
         ];
     }
 }
