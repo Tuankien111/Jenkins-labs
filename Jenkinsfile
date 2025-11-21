@@ -41,6 +41,7 @@ pipeline {
                         echo "DB_PASSWORD=${DB_PASSWORD}" >> .env
                         echo "MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}" >> .env
                     """
+                    sh 'docker compose down -v || true'
                     sh 'docker compose up -d --build --wait' 
                 }
             }
@@ -57,11 +58,8 @@ pipeline {
                     echo '--- 🔑 Đang tạo Key & Migrate... ---'
                     // Tạo App Key
                     sh 'docker compose exec -T app php artisan key:generate'
-                    // Xóa cache config cũ để nhận biến môi trường mới
                     sh 'docker compose exec -T app php artisan config:clear'
-                    // Chạy migration (DB thật trong container)
                     sh 'docker compose exec -T app php artisan migrate:refresh --seed --force'
-                    // Link storage
                     sh 'docker compose exec -T app php artisan storage:link'
                 }
             }
@@ -72,7 +70,6 @@ pipeline {
             steps {
                 script {
                     echo '--- 🧪 Đang chạy Test... ---'
-                    // Override DB connection sang sqlite memory để test nhanh hơn
                     sh 'docker compose exec -T app sh -c "DB_CONNECTION=sqlite DB_DATABASE=:memory: php artisan test"'
                 }
             }
@@ -86,17 +83,9 @@ pipeline {
                     echo '--- 📦 Đang đóng gói Shipping... ---'
                     
                     withCredentials([usernamePassword(credentialsId: 'docker-hub-auth', passwordVariable: 'DOCKER_PASS', usernameVariable: 'DOCKER_USER')]) {
-                        
-                        // 1. Đăng nhập Docker Hub (Dùng --password-stdin để bảo mật hơn)
                         sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
-                        
-                        // 2. Build Image (Production Ready)
                         sh "docker build -t ${DOCKER_HUB_USER}/${IMAGE_NAME}:${IMAGE_TAG} ."
-                        
-                        // 3. Tagging (Versioning + Latest)
                         sh "docker tag ${DOCKER_HUB_USER}/${IMAGE_NAME}:${IMAGE_TAG} ${DOCKER_HUB_USER}/${IMAGE_NAME}:latest"
-                        
-                        // 4. Push to Registry
                         sh "docker push ${DOCKER_HUB_USER}/${IMAGE_NAME}:${IMAGE_TAG}"
                         sh "docker push ${DOCKER_HUB_USER}/${IMAGE_NAME}:latest"
                         
@@ -111,7 +100,6 @@ pipeline {
         always {
             script {
                 echo '--- 🧹 Dọn dẹp môi trường Test... ---'
-                // Luôn dọn dẹp container sau khi chạy xong để tiết kiệm tài nguyên server
                 sh 'docker compose down -v' 
             }
         }
@@ -130,7 +118,6 @@ pipeline {
     }
 }
 
-// Hàm gửi Discord (Đã fix lỗi dấu nháy)
 def discordSend(Map args) {
     def color = (args.status == 'SUCCESS') ? '3066993' : '15158332' // Xanh hoặc Đỏ
     def message = args.message
