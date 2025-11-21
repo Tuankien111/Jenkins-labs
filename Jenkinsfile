@@ -120,8 +120,6 @@ pipeline {
                     echo '--- 🗄️ Cập nhật Database & Seed ---'
                     // Migrate
                     sh 'docker exec my-prod-site-app-1 php artisan migrate --force'
-                    // Seed (Tạm thời - Lưu ý: Seed nhiều lần có thể gây trùng dữ liệu nếu seeder không chuẩn)
-                    sh 'docker exec my-prod-site-app-1 php artisan db:seed --force'
                     
                     echo '--- 🔗 Link Storage ---'
                     sh 'docker exec my-prod-site-app-1 php artisan storage:link'

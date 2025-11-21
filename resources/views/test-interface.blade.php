@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test Mini App API</title>
+    <title>Test Mini App API (Mock Mode)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Custom scrollbar for aesthetics */
@@ -15,9 +15,9 @@
 </head>
 <body class="bg-gray-100 font-sans h-screen flex flex-col">
 
-    <header class="bg-rose-600 text-white p-4 shadow-md flex justify-between items-center">
-        <h1 class="text-xl font-bold">🛒 Mini App Của Tuấn Kiện hellloooo</h1>
-        <button onclick="loadOrders()" class="bg-rose-700 hover:bg-rose-800 px-4 py-2 rounded text-sm">
+    <header class="bg-indigo-600 text-white p-4 shadow-md flex justify-between items-center">
+        <h1 class="text-xl font-bold">🛒 Mini App Production (Mock Data)</h1>
+        <button onclick="loadOrders()" class="bg-indigo-700 hover:bg-indigo-800 px-4 py-2 rounded text-sm">
             Refresh Orders
         </button>
     </header>
@@ -25,12 +25,13 @@
     <div class="flex-1 flex overflow-hidden">
         
         <div class="w-2/3 p-6 overflow-y-auto border-r border-gray-300 bg-white">
-            <h2 class="text-lg font-semibold mb-4 text-gray-700">Available Products</h2>
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-semibold text-gray-700">Available Products</h2>
+                <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded border border-yellow-200">⚠️ Running in Mock Data Mode</span>
+            </div>
+            
             <div id="product-list" class="grid grid-cols-3 gap-4">
                 <p class="text-gray-500 col-span-3 text-center">Loading products...</p>
-            </div>
-            <div class="mt-4 text-center">
-                <button id="load-more-btn" class="hidden text-rose-600 hover:underline">Load More</button>
             </div>
         </div>
 
@@ -69,36 +70,46 @@
 
     <div class="h-1/4 bg-gray-800 text-white p-4 overflow-y-auto">
         <h3 class="text-sm font-bold uppercase tracking-wider text-gray-400 mb-2">Recent Order Logs (From API)</h3>
-        <div id="order-logs" class="space-y-1 font-mono text-xs">
-            </div>
+        <div id="order-logs" class="space-y-1 font-mono text-xs"></div>
     </div>
 
     <script>
         // STATE
         let products = [];
-        let cart = {}; // format: { productId: { ...product, qty: 1 } }
+        let cart = {}; 
+
+        // --- MOCK DATA CONFIGURATION ---
+        const MOCK_PRODUCTS = [
+            { id: 1, name: "iPhone 15 Pro Max (Mock)", price: 1199.00, description: "Titanium design, A17 Pro chip." },
+            { id: 2, name: "MacBook Air M3 (Mock)", price: 1099.00, description: "Lean. Mean. M3 machine." },
+            { id: 3, name: "Sony WH-1000XM5 (Mock)", price: 348.00, description: "Industry-leading noise canceling." },
+            { id: 4, name: "Samsung Galaxy S24 (Mock)", price: 799.00, description: "Galaxy AI is here." },
+            { id: 5, name: "Logitech MX Master 3S (Mock)", price: 99.00, description: "Performance wireless mouse." },
+            { id: 6, name: "Keychron Q1 Pro (Mock)", price: 199.00, description: "Custom mechanical keyboard." },
+            { id: 7, name: "Dell XPS 15 (Mock)", price: 1499.00, description: "Immersive 4K OLED display." },
+            { id: 8, name: "iPad Air 5 (Mock)", price: 599.00, description: "Supercharged by M1." },
+            { id: 9, name: "AirPods Pro 2 (Mock)", price: 249.00, description: "Rebuilt from the sound up." }
+        ];
 
         // INIT
         document.addEventListener('DOMContentLoaded', () => {
-            fetchProducts();
+            fetchProductsMock(); // Sử dụng hàm mock thay vì fetch API thật
             loadOrders();
         });
 
-        // --- API FUNCTIONS ---
+        // --- FUNCTIONS ---
 
-        async function fetchProducts() {
-            try {
-                const res = await fetch('/api/products');
-                const json = await res.json();
-                // Laravel Paginate returns data inside .data
-                products = json.data || []; 
+        // Thay thế hàm fetchProducts cũ bằng hàm này
+        function fetchProductsMock() {
+            const list = document.getElementById('product-list');
+            // Giả lập loading network
+            setTimeout(() => {
+                products = MOCK_PRODUCTS;
                 renderProducts();
-            } catch (err) {
-                console.error(err);
-                alert('Error loading products');
-            }
+            }, 500);
         }
 
+        // Giữ nguyên logic submit để test kết nối API (Dù có thể lỗi validation DB)
         async function submitOrder() {
             const name = document.getElementById('c-name').value;
             const phone = document.getElementById('c-phone').value;
@@ -138,12 +149,14 @@
                     document.getElementById('c-name').value = '';
                     document.getElementById('c-phone').value = '';
                     renderCart();
-                    loadOrders(); // Refresh logs
+                    loadOrders(); 
                 } else {
-                    alert('Error: ' + (result.message || JSON.stringify(result)));
+                    // Hiển thị lỗi rõ ràng (thường là lỗi validation do product id không có trong DB)
+                    console.log(result);
+                    alert('Backend Error: ' + (result.message || JSON.stringify(result)));
                 }
             } catch (err) {
-                alert('System Error');
+                alert('System Error: Check console');
                 console.error(err);
             } finally {
                 btn.disabled = false;
@@ -153,11 +166,11 @@
 
         async function loadOrders() {
             const container = document.getElementById('order-logs');
-            container.innerHTML = '<p class="text-gray-500">Fetching...</p>';
+            container.innerHTML = '<p class="text-gray-500">Fetching logs...</p>';
             try {
                 const res = await fetch('/api/orders');
                 const json = await res.json();
-                const orders = json.data || []; // Assuming paginate or resource collection
+                const orders = json.data || [];
                 
                 let html = '';
                 orders.forEach(o => {
@@ -173,11 +186,11 @@
                 });
                 container.innerHTML = html || '<p class="text-gray-500">No orders found.</p>';
             } catch (err) {
-                container.innerHTML = '<p class="text-red-500">Failed to load orders.</p>';
+                container.innerHTML = '<p class="text-red-500">Failed to load orders (Is DB migrated?).</p>';
             }
         }
 
-        // --- UI RENDER FUNCTIONS ---
+        // --- UI RENDER FUNCTIONS (Giữ nguyên) ---
 
         function renderProducts() {
             const container = document.getElementById('product-list');
@@ -195,10 +208,10 @@
                 card.innerHTML = `
                     <div class="flex justify-between items-start mb-2">
                         <h3 class="font-bold text-sm text-gray-800 h-10 overflow-hidden line-clamp-2">${p.name}</h3>
-                        <span class="bg-rose-100 text-rose-800 text-xs font-bold px-2 py-1 rounded">$${p.price}</span>
+                        <span class="bg-indigo-100 text-indigo-800 text-xs font-bold px-2 py-1 rounded">$${p.price}</span>
                     </div>
                     <p class="text-xs text-gray-500 mb-2 line-clamp-2">${p.description || 'No description'}</p>
-                    <button class="w-full mt-2 bg-gray-100 hover:bg-rose-50 text-rose-600 text-xs font-bold py-1 rounded border border-rose-200">
+                    <button class="w-full mt-2 bg-gray-100 hover:bg-indigo-50 text-indigo-600 text-xs font-bold py-1 rounded border border-indigo-200">
                         + Add to Cart
                     </button>
                 `;
